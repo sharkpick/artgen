@@ -37,6 +37,22 @@ func main() {
 }
 ```
 
+you can also change the size of the end product. you must set your desired result before running Generate()
+```go
+func main() {
+    width, height := 1920, 1080
+    for i := 0; i < 10; i++ {
+        p := artgen.NewPainting()
+        p.SetWidth(width)
+        p.SetHeight(height)
+        // p.SetDimensions(width, height) // or do both
+        p.Generate()
+        defer p.Cleanup()
+        // do work
+    }
+}
+```
+
 ## samples
 
 artgen uses some randomness to make fun images like the below. 
