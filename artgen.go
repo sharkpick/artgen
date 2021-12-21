@@ -11,8 +11,10 @@ import (
 )
 
 const (
-	workspace = "/dev/shm/"
-	filename  = "%s%s.png"
+	filename = "%s%s.png"
+
+	defaultWidth  = 1280
+	defaultHeight = 720
 )
 
 func init() {
@@ -20,25 +22,42 @@ func init() {
 }
 
 type Painting struct {
-	title     string
-	workspace string
+	title         string
+	workspace     string
+	width, height int
 }
 
 func NewPainting(useWorkspace ...string) *Painting {
 	workspace := func() string {
 		if len(useWorkspace) > 0 {
 			return useWorkspace[0]
+		} else {
+			return "/dev/shm/"
 		}
-		return workspace
 	}()
 	return &Painting{
 		title:     fmt.Sprintf("%08x", rand.Uint32()),
 		workspace: workspace,
+		width:     defaultWidth,
+		height:    defaultHeight,
 	}
 }
 
+func (p *Painting) SetWidth(width int) {
+	p.width = width
+}
+
+func (p *Painting) SetHeight(height int) {
+	p.height = height
+}
+
+func (p *Painting) SetDimensions(width, height int) {
+	p.width = width
+	p.height = height
+}
+
 func (p *Painting) File() string {
-	return fmt.Sprintf(filename, workspace, p.title)
+	return fmt.Sprintf(filename, p.workspace, p.title)
 }
 
 func (p *Painting) Image() string {

@@ -7,16 +7,11 @@ import (
 	"github.com/fogleman/gg"
 )
 
-const (
-	width  = 1280
-	height = 720
-)
-
 func (p *Painting) Generate() {
-	dc := gg.NewContext(width, height)
+	dc := gg.NewContext(p.width, p.height)
 	grad := randomLinearGradient()
 	dc.SetColor(randomColor())
-	dc.DrawRectangle(200, 200, width, height)
+	dc.DrawRectangle(0, 0, float64(p.width), float64(p.height))
 	dc.Stroke()
 	dc.SetFillStyle(grad)
 	dc.MoveTo(0, 0)
@@ -30,7 +25,7 @@ func (p *Painting) Generate() {
 	for i := 0; i < (rand.Intn(16-1) + 1); i++ {
 		dc.SetRGBA255(randomRGBA())
 		dc.SetLineWidth(float64(rand.Intn(24-8) + 8))
-		dc.DrawRegularPolygon(randomPolygon())
+		dc.DrawRegularPolygon(p.randomPolygon())
 		dc.Stroke()
 	}
 	dc.SavePNG(p.File())
@@ -65,8 +60,8 @@ func randomColor() color.RGBA {
 	}
 }
 
-func randomPolygon() (n int, x, y, r, rotation float64) {
-	max, min := width, width/4
+func (p *Painting) randomPolygon() (n int, x, y, r, rotation float64) {
+	max, min := p.width, p.width/4
 	n = rand.Intn(5-3) + 3 // defines shape (num points) of polygon
 	x = float64(rand.Intn(max-min) + min)
 	y = float64(rand.Intn(max-min) + min)
