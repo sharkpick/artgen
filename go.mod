@@ -1,4 +1,4 @@
-module github.com/squishd/artgen
+module github.com/sharkpick/artgen
 
 go 1.17
 
