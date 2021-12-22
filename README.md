@@ -8,7 +8,7 @@ artgen makes ephemeral art for your enjoyment (or not). it makes it easy to gene
 
 artgen is simple to use. you can use html templates to serve the image:
 ```go
-import "github.com/squishd/artgen"
+import "github.com/sharkpick/artgen"
 
 func handleArtgen(w http.ResponseWriter, r *http.Request) {
     p := artgen.NewPainting() // returns a *Painting, ready to generate
@@ -50,6 +50,18 @@ func main() {
         defer p.Cleanup()
         // do work
     }
+}
+```
+
+you can also use JPGs instead of PNGs when speed matters. default quality for artget.JPG is 75% but can be adjusted before running Generate().
+
+```go
+func main() {
+    p := artgen.NewPainting()
+    p.SetFormat(artgen.JPG)
+    p.SetQuality(50)
+    p.Generate()
+    defer p.Cleanup()
 }
 ```
 

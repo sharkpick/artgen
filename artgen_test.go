@@ -29,6 +29,13 @@ func TestWithWorkspace(t *testing.T) {
 	}
 }
 
+func TestJpg(t *testing.T) {
+	p := NewPainting("./")
+	p.SetFormat(JPG)
+	p.Generate()
+	defer p.Cleanup()
+}
+
 func BenchmarkGenerate(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := NewPainting()

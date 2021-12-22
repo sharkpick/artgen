@@ -1,11 +1,25 @@
 package artgen
 
 import (
+	"image"
 	"image/color"
+	"log"
 	"math/rand"
 
 	"github.com/fogleman/gg"
 )
+
+func (p *Painting) SaveFile(img image.Image) {
+	if p.format == PNG {
+		if err := gg.SavePNG(p.File(), img); err != nil {
+			log.Println("Error saving PNG:", err)
+		}
+	} else {
+		if err := gg.SaveJPG(p.File(), img, p.quality); err != nil {
+			log.Println("Error saving PNG:", err)
+		}
+	}
+}
 
 func (p *Painting) Generate() {
 	dc := gg.NewContext(p.width, p.height)
@@ -28,7 +42,10 @@ func (p *Painting) Generate() {
 		dc.DrawRegularPolygon(p.randomPolygon())
 		dc.Stroke()
 	}
-	dc.SavePNG(p.File())
+	p.imageContext = dc
+	if p.writeToDisk == true {
+		p.SaveFile(dc.Image())
+	}
 }
 
 func randomLinearGradient() gg.Gradient {

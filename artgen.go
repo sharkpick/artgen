@@ -8,23 +8,38 @@ import (
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/fogleman/gg"
 )
 
 const (
-	filename = "%s%s.png"
+	filename = "%s%s.%s"
 
-	defaultWidth  = 1280
-	defaultHeight = 720
+	defaultWidth   = 1280
+	defaultHeight  = 720
+	defaultFormat  = PNG
+	defaultQuality = 75 // default used by jpg. ignored for png
 )
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
+type Format int
+
+const (
+	PNG Format = iota
+	JPG
+)
+
 type Painting struct {
 	title         string
 	workspace     string
 	width, height int
+	format        Format
+	quality       int
+	imageContext  *gg.Context
+	writeToDisk   bool
 }
 
 func NewPainting(useWorkspace ...string) *Painting {
@@ -36,10 +51,13 @@ func NewPainting(useWorkspace ...string) *Painting {
 		}
 	}()
 	return &Painting{
-		title:     fmt.Sprintf("%08x", rand.Uint32()),
-		workspace: workspace,
-		width:     defaultWidth,
-		height:    defaultHeight,
+		title:       fmt.Sprintf("%08x", rand.Uint32()),
+		workspace:   workspace,
+		width:       defaultWidth,
+		height:      defaultHeight,
+		format:      defaultFormat,
+		quality:     defaultQuality,
+		writeToDisk: true,
 	}
 }
 
@@ -56,8 +74,36 @@ func (p *Painting) SetDimensions(width, height int) {
 	p.height = height
 }
 
+func (p *Painting) SetFormat(format Format) {
+	p.format = format
+}
+
+func (p *Painting) GetFormat() Format {
+	return p.format
+}
+
+func (p *Painting) SetJPGQuality(quality int) {
+	p.quality = func() int {
+		if quality > 100 {
+			return 100
+		}
+		return quality
+	}()
+}
+
+func (p *Painting) SetWriteToDisk(write bool) {
+	p.writeToDisk = write
+}
+
 func (p *Painting) File() string {
-	return fmt.Sprintf(filename, p.workspace, p.title)
+	extension := func() string {
+		if p.format == PNG {
+			return "png"
+		} else {
+			return "jpg"
+		}
+	}()
+	return fmt.Sprintf(filename, p.workspace, p.title, extension)
 }
 
 func (p *Painting) Image() string {
