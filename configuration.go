@@ -8,6 +8,8 @@ const (
 	DEFAULT Resolution = iota // 720p
 	HIGHER                    // 1080p
 	HIGHEST                   // 4k
+	LOWER                     // 360p
+	LOWEST                    // 240p
 	FAVICON                   // 32x32
 	APPLE                     // 120x120
 )
@@ -64,6 +66,10 @@ func (c *Configuration) GetResolution() (w, h int) {
 		w, h = 1920, 1080
 	case HIGHEST:
 		w, h = 3840, 2160
+	case LOWER:
+		w, h = 480, 360
+	case LOWEST:
+		w, h = 320, 240
 	case FAVICON:
 		w, h = 32, 32
 	case APPLE:

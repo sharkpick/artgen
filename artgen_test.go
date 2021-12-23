@@ -1,8 +1,6 @@
 package artgen
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"testing"
 )
@@ -33,13 +31,14 @@ func TestWithWorkspace(t *testing.T) {
 }
 
 func TestJpg(t *testing.T) {
-	config := NewConfiguration("./")
+	config := NewConfiguration()
 	p := NewPainting(config)
 	p.SetFormat(JPG)
 	p.Generate()
 	defer p.Cleanup()
 }
 
+/*// the following two tests calculate an average file size for the 2 defaults
 func TestDefaultSize(t *testing.T) {
 	testDir := "./pngs/"
 	os.Mkdir(testDir, 0777)
@@ -90,15 +89,7 @@ func TestDefaultJPGSize(t *testing.T) {
 	}
 	os.RemoveAll(testDir)
 }
-
-func BenchmarkGenerate(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		p := NewPainting()
-		p.Generate()
-		p.Cleanup()
-	}
-}
-
+*/
 func BenchmarkGenerateDefault(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := NewPainting()
@@ -110,7 +101,7 @@ func BenchmarkGenerateDefault(b *testing.B) {
 func BenchmarkGenerate1080pPNG(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() {
-			config := NewConfiguration("./")
+			config := NewConfiguration()
 			config.Resolution = HIGHER
 			p := NewPainting(config)
 			p.Generate()
@@ -122,7 +113,7 @@ func BenchmarkGenerate1080pPNG(b *testing.B) {
 func BenchmarkGenerate4kPNG(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() {
-			config := NewConfiguration("./")
+			config := NewConfiguration()
 			config.Resolution = HIGHEST
 			p := NewPainting(config)
 			p.Generate()
@@ -134,7 +125,7 @@ func BenchmarkGenerate4kPNG(b *testing.B) {
 func BenchmarkGenerateFavicon(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() {
-			config := NewConfiguration("./")
+			config := NewConfiguration()
 			config.Resolution = FAVICON
 			p := NewPainting(config)
 			p.Generate()
@@ -146,7 +137,7 @@ func BenchmarkGenerateFavicon(b *testing.B) {
 func BenchmarkGenerateAppleIcons(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() {
-			config := NewConfiguration("./")
+			config := NewConfiguration()
 			config.Resolution = APPLE
 			p := NewPainting(config)
 			p.Generate()
