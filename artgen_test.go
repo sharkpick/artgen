@@ -1,10 +1,11 @@
 package artgen
 
 import (
+	"fmt"
+	"log"
+	"os"
 	"testing"
 )
-
-/*
 
 func TestMain(t *testing.T) {
 	p := NewPainting()
@@ -12,9 +13,9 @@ func TestMain(t *testing.T) {
 	defer p.Cleanup()
 }
 
-
 func TestWithWorkspace(t *testing.T) {
-	p := NewPainting("./")
+	config := NewConfiguration("./")
+	p := NewPainting(config)
 	if len(p.File()) < 3 {
 		t.Fatalf("Error got %d - want >2\n", len(p.File()))
 	}
@@ -32,7 +33,8 @@ func TestWithWorkspace(t *testing.T) {
 }
 
 func TestJpg(t *testing.T) {
-	p := NewPainting("./")
+	config := NewConfiguration("./")
+	p := NewPainting(config)
 	p.SetFormat(JPG)
 	p.Generate()
 	defer p.Cleanup()
@@ -42,7 +44,8 @@ func TestDefaultSize(t *testing.T) {
 	testDir := "./pngs/"
 	os.Mkdir(testDir, 0777)
 	for i := 0; i < 50; i++ {
-		p := NewPainting(testDir)
+		config := NewConfiguration(testDir)
+		p := NewPainting(config)
 		p.Generate()
 	}
 	if f, err := os.ReadDir(testDir); err != nil {
@@ -66,7 +69,8 @@ func TestDefaultJPGSize(t *testing.T) {
 	testDir := "./jpgs/"
 	os.Mkdir(testDir, 0777)
 	for i := 0; i < 50; i++ {
-		p := NewPainting(testDir)
+		config := NewConfiguration(testDir)
+		p := NewPainting(config)
 		p.SetFormat(JPG)
 		p.Generate()
 	}
@@ -94,22 +98,22 @@ func BenchmarkGenerate(b *testing.B) {
 		p.Cleanup()
 	}
 }
-*/
+
 func BenchmarkGenerateDefault(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		p := NewPainting("./")
+		p := NewPainting()
 		p.Generate()
-		//p.Cleanup()
+		p.Cleanup()
 	}
 }
 
-/*
 func BenchmarkGenerate1080pPNG(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() {
-			p := NewPainting("./")
+			config := NewConfiguration("./")
+			config.Resolution = HIGHER
+			p := NewPainting(config)
 			p.Generate()
-			p.SetDimensions(1920, 1080)
 			defer p.Cleanup()
 		}()
 	}
@@ -118,9 +122,10 @@ func BenchmarkGenerate1080pPNG(b *testing.B) {
 func BenchmarkGenerate4kPNG(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() {
-			p := NewPainting("./")
+			config := NewConfiguration("./")
+			config.Resolution = HIGHEST
+			p := NewPainting(config)
 			p.Generate()
-			p.SetDimensions(3840, 2160)
 			defer p.Cleanup()
 		}()
 	}
@@ -129,11 +134,23 @@ func BenchmarkGenerate4kPNG(b *testing.B) {
 func BenchmarkGenerateFavicon(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() {
-			p := NewPainting()
+			config := NewConfiguration("./")
+			config.Resolution = FAVICON
+			p := NewPainting(config)
 			p.Generate()
-			p.SetDimensions(32, 32)
 			defer p.Cleanup()
 		}()
 	}
 }
-*/
+
+func BenchmarkGenerateAppleIcons(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		func() {
+			config := NewConfiguration("./")
+			config.Resolution = APPLE
+			p := NewPainting(config)
+			p.Generate()
+			defer p.Cleanup()
+		}()
+	}
+}
