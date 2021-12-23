@@ -9,37 +9,37 @@ import (
 )
 
 func (p *Painting) SaveFile() {
-	if p.format == PNG {
+	if p.Format == PNG {
 		if err := gg.SavePNG(p.File(), p.imageContext.Image()); err != nil {
 			log.Println("Error saving PNG:", err)
 		}
 	} else {
-		if err := gg.SaveJPG(p.File(), p.imageContext.Image(), p.quality); err != nil {
+		if err := gg.SaveJPG(p.File(), p.imageContext.Image(), p.Quality); err != nil {
 			log.Println("Error saving PNG:", err)
 		}
 	}
 }
 
 func (p *Painting) Generate() {
-	dc := gg.NewContext(p.width, p.height)
+	dc := gg.NewContext(p.GetResolution())
 	grad := randomLinearGradient()
 	dc.SetFillStyle(grad)
 	dc.MoveTo(0, 0)
-	dc.LineTo(0, float64(p.width))
-	dc.LineTo(0, float64(p.width))
+	dc.LineTo(0, float64(p.Width()))
+	dc.LineTo(0, float64(p.Width()))
 	dc.LineTo(4000, 0)
 	dc.ClosePath()
 	dc.Fill()
 	dc.Stroke()
 	// now iterate and spackle with polygonal noise
-	for i := 0; i < p.iterations; i++ {
+	for i := 0; i < p.Iterations; i++ {
 		dc.SetRGBA255(randomRGBA())
 		dc.SetLineWidth(float64(rand.Intn(40-8) + 8))
 		dc.DrawRegularPolygon(p.randomPolygon())
 		dc.Stroke()
 	}
 	p.imageContext = dc
-	if p.writeToDisk {
+	if p.WriteFile {
 		p.SaveFile()
 	}
 }
@@ -74,7 +74,7 @@ func randomColor() color.RGBA {
 }
 
 func (p *Painting) randomPolygon() (n int, x, y, r, rotation float64) {
-	max, min := p.width, p.width/4
+	max, min := p.Width(), p.Width()/4
 	n = rand.Intn(5-3) + 3 // defines shape (num points) of polygon
 	x = float64(rand.Intn(max-min) + min)
 	y = float64(rand.Intn(max-min) + min)

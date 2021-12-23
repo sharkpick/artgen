@@ -14,105 +14,68 @@ import (
 
 const (
 	filename = "%s%s.%s"
-
-	defaultWidth   = 1280
-	defaultHeight  = 720
-	defaultFormat  = PNG
-	defaultQuality = 75 // default used by jpg. ignored for png
 )
-
-var defaultIterations = (rand.Intn(7) + 1)
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-type Format int
-
-const (
-	PNG Format = iota
-	JPG
-)
-
 type Painting struct {
-	title               string
-	workspace           string
-	width, height       int
-	format              Format
-	quality, iterations int
-	imageContext        *gg.Context
-	writeToDisk         bool
+	Configuration
+	title        string
+	imageContext *gg.Context
 }
 
-func NewPainting(useWorkspace ...string) *Painting {
-	workspace := func() string {
-		if len(useWorkspace) > 0 {
-			return useWorkspace[0]
+func NewPainting(configuration ...Configuration) *Painting {
+	config := func() Configuration {
+		if len(configuration) > 0 {
+			return configuration[0]
 		} else {
-			return "/dev/shm/"
+			return DefaultConfiguration()
 		}
 	}()
 	return &Painting{
-		title:       fmt.Sprintf("%08x", rand.Uint32()),
-		workspace:   workspace,
-		width:       defaultWidth,
-		height:      defaultHeight,
-		format:      defaultFormat,
-		quality:     defaultQuality,
-		iterations:  defaultIterations,
-		writeToDisk: true,
+		Configuration: config,
+		title:         fmt.Sprintf("%08x", rand.Uint32()),
 	}
 }
 
-func NewGeneratedPainting(useWorkspace ...string) *Painting {
-	workspace := func() string {
-		if len(useWorkspace) > 0 {
-			return useWorkspace[0]
+func NewGeneratedPainting(configuration ...Configuration) *Painting {
+	config := func() Configuration {
+		if len(configuration) > 0 {
+			return configuration[0]
 		} else {
-			return "/dev/shm/"
+			tmp := DefaultConfiguration()
+			tmp.WriteFile = false
+			return tmp
 		}
 	}()
 	p := &Painting{
-		title:       fmt.Sprintf("%08x", rand.Uint32()),
-		workspace:   workspace,
-		width:       defaultWidth,
-		height:      defaultHeight,
-		format:      defaultFormat,
-		quality:     defaultQuality,
-		iterations:  defaultIterations,
-		writeToDisk: false,
+		Configuration: config,
+		title:         fmt.Sprintf("%08x", rand.Uint32()),
 	}
 	p.Generate()
 	return p
 }
 
 func (p *Painting) SetIterations(iterations int) {
-	p.iterations = iterations
+	p.Iterations = iterations
 }
 
-func (p *Painting) SetWidth(width int) {
-	p.width = width
-}
-
-func (p *Painting) SetHeight(height int) {
-	p.height = height
-}
-
-func (p *Painting) SetDimensions(width, height int) {
-	p.width = width
-	p.height = height
+func (p *Painting) SetResolution(resolution Resolution) {
+	p.Resolution = resolution
 }
 
 func (p *Painting) SetFormat(format Format) {
-	p.format = format
+	p.Format = format
 }
 
 func (p *Painting) GetFormat() Format {
-	return p.format
+	return p.Format
 }
 
 func (p *Painting) SetJPGQuality(quality int) {
-	p.quality = func() int {
+	p.Quality = func() int {
 		if quality > 100 {
 			return 100
 		}
@@ -121,18 +84,18 @@ func (p *Painting) SetJPGQuality(quality int) {
 }
 
 func (p *Painting) SetWriteToDisk(write bool) {
-	p.writeToDisk = write
+	p.WriteFile = write
 }
 
 func (p *Painting) File() string {
 	extension := func() string {
-		if p.format == PNG {
+		if p.Format == PNG {
 			return "png"
 		} else {
 			return "jpg"
 		}
 	}()
-	return fmt.Sprintf(filename, p.workspace, p.title, extension)
+	return fmt.Sprintf(filename, p.Workspace, p.title, extension)
 }
 
 func (p *Painting) Image() string {
