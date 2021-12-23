@@ -80,7 +80,7 @@ func NewGeneratedPainting(useWorkspace ...string) *Painting {
 		format:      defaultFormat,
 		quality:     defaultQuality,
 		iterations:  defaultIterations,
-		writeToDisk: true,
+		writeToDisk: false,
 	}
 	p.Generate()
 	return p

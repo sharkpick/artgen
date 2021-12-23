@@ -1,7 +1,6 @@
 package artgen
 
 import (
-	"image"
 	"image/color"
 	"log"
 	"math/rand"
@@ -9,13 +8,13 @@ import (
 	"github.com/fogleman/gg"
 )
 
-func (p *Painting) SaveFile(img image.Image) {
+func (p *Painting) SaveFile() {
 	if p.format == PNG {
-		if err := gg.SavePNG(p.File(), img); err != nil {
+		if err := gg.SavePNG(p.File(), p.imageContext.Image()); err != nil {
 			log.Println("Error saving PNG:", err)
 		}
 	} else {
-		if err := gg.SaveJPG(p.File(), img, p.quality); err != nil {
+		if err := gg.SaveJPG(p.File(), p.imageContext.Image(), p.quality); err != nil {
 			log.Println("Error saving PNG:", err)
 		}
 	}
@@ -41,7 +40,7 @@ func (p *Painting) Generate() {
 	}
 	p.imageContext = dc
 	if p.writeToDisk {
-		p.SaveFile(dc.Image())
+		p.SaveFile()
 	}
 }
 
