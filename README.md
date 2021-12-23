@@ -2,7 +2,7 @@
 
 ## about
 
-artgen makes ephemeral art for your enjoyment (or not). it makes it easy to generate some random art and then display it to an enduser. It could also be used to make larger art than it does by default (720p) at the cost of more time/resources.
+artgen makes ephemeral art for your enjoyment (or not). it makes it easy to generate some random art and then display it to an enduser. It could also be used to make larger art than it does by default (720p) at the cost of more time/resources. 
 
 ## usage
 

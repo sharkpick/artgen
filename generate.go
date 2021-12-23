@@ -24,34 +24,31 @@ func (p *Painting) SaveFile(img image.Image) {
 func (p *Painting) Generate() {
 	dc := gg.NewContext(p.width, p.height)
 	grad := randomLinearGradient()
-	dc.SetColor(randomColor())
-	dc.DrawRectangle(0, 0, float64(p.width), float64(p.height))
-	dc.Stroke()
 	dc.SetFillStyle(grad)
 	dc.MoveTo(0, 0)
-	dc.LineTo(0, 5000)
-	dc.LineTo(0, 5000)
-	dc.LineTo(5000, 0)
+	dc.LineTo(0, float64(p.width))
+	dc.LineTo(0, float64(p.width))
+	dc.LineTo(4000, 0)
 	dc.ClosePath()
 	dc.Fill()
 	dc.Stroke()
 	// now iterate and spackle with polygonal noise
-	for i := 0; i < (rand.Intn(16-1) + 1); i++ {
+	for i := 0; i < p.iterations; i++ {
 		dc.SetRGBA255(randomRGBA())
-		dc.SetLineWidth(float64(rand.Intn(24-8) + 8))
+		dc.SetLineWidth(float64(rand.Intn(40-8) + 8))
 		dc.DrawRegularPolygon(p.randomPolygon())
 		dc.Stroke()
 	}
 	p.imageContext = dc
-	if p.writeToDisk == true {
+	if p.writeToDisk {
 		p.SaveFile(dc.Image())
 	}
 }
 
 func randomLinearGradient() gg.Gradient {
-	x0 := float64(rand.Intn(200-50) + 50)
-	y0 := float64(rand.Intn(400-100) + 100)
-	x1 := float64(rand.Intn(800-200) + 200)
+	x0 := float64(rand.Intn(300-50) + 50)
+	y0 := float64(rand.Intn(600-200) + 200)
+	x1 := float64(rand.Intn(900-500) + 500)
 	y1 := float64(rand.Intn(1200))
 	grad := gg.NewLinearGradient(x0, y0, x1, y1)
 	grad.AddColorStop(float64(rand.Intn(2-1)+1), randomColor()) // colors inside gradient

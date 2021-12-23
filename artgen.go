@@ -21,6 +21,8 @@ const (
 	defaultQuality = 75 // default used by jpg. ignored for png
 )
 
+var defaultIterations = (rand.Intn(7) + 1)
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -33,13 +35,13 @@ const (
 )
 
 type Painting struct {
-	title         string
-	workspace     string
-	width, height int
-	format        Format
-	quality       int
-	imageContext  *gg.Context
-	writeToDisk   bool
+	title               string
+	workspace           string
+	width, height       int
+	format              Format
+	quality, iterations int
+	imageContext        *gg.Context
+	writeToDisk         bool
 }
 
 func NewPainting(useWorkspace ...string) *Painting {
@@ -57,8 +59,35 @@ func NewPainting(useWorkspace ...string) *Painting {
 		height:      defaultHeight,
 		format:      defaultFormat,
 		quality:     defaultQuality,
+		iterations:  defaultIterations,
 		writeToDisk: true,
 	}
+}
+
+func NewGeneratedPainting(useWorkspace ...string) *Painting {
+	workspace := func() string {
+		if len(useWorkspace) > 0 {
+			return useWorkspace[0]
+		} else {
+			return "/dev/shm/"
+		}
+	}()
+	p := &Painting{
+		title:       fmt.Sprintf("%08x", rand.Uint32()),
+		workspace:   workspace,
+		width:       defaultWidth,
+		height:      defaultHeight,
+		format:      defaultFormat,
+		quality:     defaultQuality,
+		iterations:  defaultIterations,
+		writeToDisk: true,
+	}
+	p.Generate()
+	return p
+}
+
+func (p *Painting) SetIterations(iterations int) {
+	p.iterations = iterations
 }
 
 func (p *Painting) SetWidth(width int) {
