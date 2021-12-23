@@ -92,9 +92,14 @@ done := make(chan interface{}) // close after server shutdown for graceful shutd
 buffer := make(chan *artgen.Painting, 24) // will hold 24 Generated() images for rapid use
 func fillBuffer() {
     go func() {
-        case <-done:
-            return
-        case buffer <- artgen.NewGeneratePainting():
+        for {
+            select {
+            case <-done:
+                return
+            case buffer <- artgen.NewGeneratePainting():
+            }
+        }
+        
     }()
 }
 func handleArtGen(w http.ResponseWriter, r *http.Request) {
