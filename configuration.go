@@ -48,6 +48,17 @@ func DefaultConfiguration() Configuration {
 	}
 }
 
+func DefaultJPGConfiguration() Configuration {
+	return Configuration{
+		Format:     JPG,
+		Resolution: DEFAULT,
+		Quality:    75,
+		Iterations: rand.Intn(7) + 1,
+		Workspace:  "/dev/shm/",
+		WriteFile:  true,
+	}
+}
+
 func (c *Configuration) Width() int {
 	w, _ := c.GetResolution()
 	return w
