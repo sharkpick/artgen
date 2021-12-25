@@ -29,12 +29,12 @@ func (p *Painting) SaveFile() {
 
 func (p *Painting) Generate() {
 	dc := gg.NewContext(p.GetResolution())
-	grad := randomLinearGradient()
+	grad := randomLinearGradient(p.GetResolution())
 	dc.SetFillStyle(grad)
 	dc.MoveTo(0, 0)
 	dc.LineTo(0, float64(p.Width()))
 	dc.LineTo(0, float64(p.Width()))
-	dc.LineTo(float64(p.Width()*8), 0)
+	dc.LineTo(float64(p.Width())*25, 0)
 	dc.ClosePath()
 	dc.Fill()
 	dc.Stroke()
@@ -51,17 +51,14 @@ func (p *Painting) Generate() {
 	}
 }
 
-func randomLinearGradient() gg.Gradient {
-	x0 := float64(rand.Intn(300-50) + 50)
-	y0 := float64(rand.Intn(600-200) + 200)
-	x1 := float64(rand.Intn(900-500) + 500)
-	y1 := float64(rand.Intn(1200))
-	grad := gg.NewLinearGradient(x0, y0, x1, y1)
+func randomLinearGradient(width, height int) gg.Gradient {
+	grad := gg.NewLinearGradient(0, 0, float64(width)*1.5, float64(height)*1.5)
 	grad.AddColorStop(float64(rand.Intn(2-1)+1), randomColor()) // colors inside gradient
 	grad.AddColorStop(float64(rand.Intn(4-2)+2), randomColor())
 	grad.AddColorStop(float64(rand.Intn(8-4)+4), randomColor())
 	return grad
 }
+
 func randomRGBA(transparent ...bool) (r, g, b, a int) {
 	r = rand.Intn(255)
 	g = rand.Intn(255)
@@ -104,6 +101,19 @@ func randomPolygon(width, height int, it ...int) (n int, x, y, r, rotation float
 }
 
 func randomLineWidth(width int) float64 {
-	min, max := width/128, width/64
+	min := func() int {
+		min := (width / 128)
+		if min == 0 {
+			return 1
+		}
+		return min
+	}()
+	max := func() int {
+		max := (width / 64)
+		if max <= 1 {
+			return 2
+		}
+		return max
+	}()
 	return float64(rand.Intn(max-min) + min)
 }

@@ -6,7 +6,8 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	p := NewPainting(NewConfiguration("./"))
+	config := NewConfiguration()
+	p := NewPainting(config)
 	p.Generate()
 	defer p.Cleanup()
 }
