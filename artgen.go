@@ -22,8 +22,8 @@ func init() {
 
 type Painting struct {
 	Configuration
-	title        string
-	imageContext *gg.Context
+	title string
+	image *gg.Context
 }
 
 func NewPainting(configuration ...Configuration) *Painting {

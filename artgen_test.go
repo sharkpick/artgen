@@ -1,17 +1,18 @@
 package artgen
 
 import (
-	"os"
 	"testing"
 )
 
 func TestMain(t *testing.T) {
-	config := NewConfiguration()
+	config := NewConfiguration("./test/")
+	config.Resolution = POSTER11x14
 	p := NewPainting(config)
 	p.Generate()
-	defer p.Cleanup()
+	//defer p.Cleanup()
 }
 
+/*
 func TestWithWorkspace(t *testing.T) {
 	config := NewConfiguration("./")
 	p := NewPainting(config)
@@ -38,7 +39,7 @@ func TestJpg(t *testing.T) {
 	p.Generate()
 	defer p.Cleanup()
 }
-
+*/
 /*// the following two tests calculate an average file size for the 2 defaults
 func TestDefaultSize(t *testing.T) {
 	testDir := "./pngs/"
