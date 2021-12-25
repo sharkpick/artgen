@@ -8,6 +8,13 @@ import (
 	"github.com/fogleman/gg"
 )
 
+func doFibonacci(n int) int {
+	if n <= 1 {
+		return n
+	}
+	return doFibonacci(n-1) + doFibonacci(n-2)
+}
+
 func (p *Painting) SaveFile() {
 	if p.Format == PNG {
 		if err := gg.SavePNG(p.File(), p.imageContext.Image()); err != nil {
@@ -27,15 +34,15 @@ func (p *Painting) Generate() {
 	dc.MoveTo(0, 0)
 	dc.LineTo(0, float64(p.Width()))
 	dc.LineTo(0, float64(p.Width()))
-	dc.LineTo(4000, 0)
+	dc.LineTo(float64(p.Width()*8), 0)
 	dc.ClosePath()
 	dc.Fill()
 	dc.Stroke()
 	// now iterate and spackle with polygonal noise
 	for i := 0; i < p.Iterations; i++ {
 		dc.SetRGBA255(randomRGBA())
-		dc.SetLineWidth(float64(rand.Intn(40-8) + 8))
-		dc.DrawRegularPolygon(p.randomPolygon())
+		dc.SetLineWidth(randomLineWidth(p.Width()))
+		dc.DrawRegularPolygon(randomPolygon(p.Width(), p.Height(), i))
 		dc.Stroke()
 	}
 	p.imageContext = dc
@@ -55,11 +62,16 @@ func randomLinearGradient() gg.Gradient {
 	grad.AddColorStop(float64(rand.Intn(8-4)+4), randomColor())
 	return grad
 }
-func randomRGBA() (r, g, b, a int) {
+func randomRGBA(transparent ...bool) (r, g, b, a int) {
 	r = rand.Intn(255)
 	g = rand.Intn(255)
 	b = rand.Intn(255)
-	a = 255
+	a = func() int {
+		if len(transparent) > 0 && transparent[0] {
+			return rand.Intn(255-128) + 128
+		}
+		return 255
+	}()
 	return r, g, b, a
 }
 
@@ -73,12 +85,25 @@ func randomColor() color.RGBA {
 	}
 }
 
-func (p *Painting) randomPolygon() (n int, x, y, r, rotation float64) {
-	max, min := p.Width(), p.Width()/4
-	n = rand.Intn(5-3) + 3 // defines shape (num points) of polygon
-	x = float64(rand.Intn(max-min) + min)
-	y = float64(rand.Intn(max-min) + min)
+func randomPolygon(width, height int, it ...int) (n int, x, y, r, rotation float64) {
+	iteration := func() int {
+		if len(it) > 0 {
+			return it[0] + 1
+		}
+		return 1
+	}()
+	n = rand.Intn(7-3) + 3
+	max, min := height/16*(iteration*2), height/26*iteration
 	r = float64(rand.Intn(max-min) + min)
-	rotation = rand.Float64()
+	max, min = int(float64(width)*.95), int(r*.9)
+	x = float64(rand.Intn(max-min) + min)
+	max, min = int(float64(height)*.95), int(r*.9)
+	y = float64(rand.Intn(max-min) + min)
+	rotation = r * 1.5
 	return n, x, y, r, rotation
+}
+
+func randomLineWidth(width int) float64 {
+	min, max := width/128, width/64
+	return float64(rand.Intn(max-min) + min)
 }

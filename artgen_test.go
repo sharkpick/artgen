@@ -90,6 +90,7 @@ func TestDefaultJPGSize(t *testing.T) {
 	os.RemoveAll(testDir)
 }
 */
+
 func BenchmarkGenerateDefault(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		p := NewPainting()
