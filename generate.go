@@ -95,9 +95,9 @@ func randomPolygon(width, height int, it ...int) (n int, x, y, r, rotation float
 	n = rand.Intn(7-3) + 3
 	max, min := height/16*(iteration*2), height/26*iteration
 	r = float64(rand.Intn(max-min) + min)
-	max, min = int(float64(width)*.95), int(r*.9)
+	max, min = int((float64(width)*.95)-(r/2)), int(r)/2
 	x = float64(rand.Intn(max-min) + min)
-	max, min = int(float64(height)*.95), int(r*.9)
+	max, min = int((float64(height)*.95)-(r/2)), int(r)/2
 	y = float64(rand.Intn(max-min) + min)
 	rotation = r * 1.5
 	return n, x, y, r, rotation
