@@ -6,16 +6,19 @@ import (
 )
 
 type Configuration struct {
-	Title, Workspace         string
-	Format                   Format
-	Resolution               Resolution
-	DPI, Quality, Iterations int
-	WriteFile                bool
+	title      string // randomly-generated filename
+	Workspace  string // directory to write images to - tries /dev/shm and /tmp before defaulting to working directory
+	Format     Format
+	Resolution Resolution
+	DPI        int  // no native support but can be used to calculate desired size of gg.Context
+	Quality    int  // ignored by PNG
+	Iterations int  // number of iterations (random polygon generation step)
+	WriteFile  bool // used to prepare/generate without writing to disk to store in memory until needed
 }
 
 func NewPNGConfiguration(workspace ...string) Configuration {
 	return Configuration{
-		Title:      fmt.Sprintf("%08X", rand.Uint32()),
+		title:      fmt.Sprintf("%08X", rand.Uint32()),
 		Format:     PNG,
 		Resolution: DEFAULT,
 		DPI:        72,
@@ -36,7 +39,7 @@ func NewPNGConfiguration(workspace ...string) Configuration {
 
 func NewJPGConfiguration(workspace ...string) Configuration {
 	return Configuration{
-		Title:      fmt.Sprintf("%08X", rand.Uint32()),
+		title:      fmt.Sprintf("%08X", rand.Uint32()),
 		Format:     JPG,
 		Resolution: DEFAULT,
 		DPI:        72,

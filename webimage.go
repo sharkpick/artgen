@@ -35,7 +35,7 @@ func (w WebImage) File() string {
 		}
 		return "png"
 	}()
-	return fmt.Sprintf(filename, w.Workspace, w.Title, extension)
+	return fmt.Sprintf(filename, w.Workspace, w.title, extension)
 }
 
 func (w WebImage) GetFormat() Format {

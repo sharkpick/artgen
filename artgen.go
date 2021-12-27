@@ -18,17 +18,18 @@ const (
 	filename = "%s%s.%s"
 )
 
-var (
-	defaultWorkspace = func() string {
-		if _, err := os.Stat("/dev/shm/"); err != nil {
-			return "/dev/shm/"
-		} else if _, err = os.Stat("/tmp/"); err != nil {
-			return "/tmp/"
-		} else {
-			return "./"
-		}
-	}()
-)
+var defaultWorkspace = func() string {
+	if _, err := os.Stat("/dev/shm/"); !os.IsNotExist(err) {
+		log.Println("using /dev/shm/ as default workspace")
+		return "/dev/shm/"
+	} else if _, err = os.Stat("/tmp/"); !os.IsNotExist(err) {
+		log.Println("using /tmp/ as default workspace")
+		return "/tmp/"
+	} else {
+		log.Println("Warning: using ./ as default workspace")
+		return "./"
+	}
+}()
 
 type Painting interface {
 	File() string
