@@ -1,6 +1,8 @@
 package artgen
 
 import (
+	"bufio"
+	"encoding/base64"
 	"fmt"
 	"image"
 	"log"
@@ -53,7 +55,7 @@ func (w WebImage) PixelDimensions() (width, height int) {
 	return w.image.Width(), w.image.Height()
 }
 
-func (w WebImage) Generate() *gg.Context {
+func (w *WebImage) Generate() *gg.Context {
 	width, height := w.getDimensionsForContext()
 	w.image = gg.NewContext(width, height)
 	grad := randomLinearGradient(w.image.Width(), w.image.Height())
@@ -161,4 +163,23 @@ func (w *WebImage) Cleanup() {
 	if err := os.Remove(w.File()); err != nil {
 		log.Println("Warning in WebImage.Cleanup()", err)
 	}
+}
+
+func (w *WebImage) Image() string {
+	f, err := os.Open(w.File())
+	if err != nil {
+		log.Fatalln("Fatal Error opening image", w.File(), err)
+	}
+	defer f.Close()
+	stats, err := f.Stat()
+	if err != nil {
+		log.Fatalln("Fatal Error: can't get file size", w.File(), err)
+	}
+	buf := make([]byte, stats.Size())
+	reader := bufio.NewReader(f)
+	_, err = reader.Read(buf)
+	if err != nil {
+		log.Fatalln("Fatal Error:", err)
+	}
+	return base64.StdEncoding.EncodeToString(buf)
 }
