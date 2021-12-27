@@ -2,60 +2,10 @@ package artgen
 
 import (
 	"image/color"
-	"log"
 	"math/rand"
 
 	"github.com/fogleman/gg"
-	"gonum.org/v1/plot/vg"
-	"gonum.org/v1/plot/vg/vgimg"
 )
-
-func doFibonacci(n int) int {
-	if n <= 1 {
-		return n
-	}
-	return doFibonacci(n-1) + doFibonacci(n-2)
-}
-
-func (p *Painting) SaveFile() {
-	if p.Format == PNG {
-		if err := gg.SavePNG(p.File(), p.image.Image()); err != nil {
-			log.Println("Error saving PNG:", err)
-		}
-	} else {
-		if err := gg.SaveJPG(p.File(), p.image.Image(), p.Quality); err != nil {
-			log.Println("Error saving PNG:", err)
-		}
-	}
-}
-
-func (p *Painting) Generate() *gg.Context {
-	width := p.WidthInches() * vg.Inch
-	height := p.HeightInches() * vg.Inch
-	p.image = gg.NewContextForImage(vgimg.NewWith(
-		vgimg.UseDPI(p.DPI),
-		vgimg.UseWH(width, height)).Image())
-	grad := randomLinearGradient(p.image.Width(), p.image.Height())
-	p.image.SetFillStyle(grad)
-	p.image.MoveTo(0, 0)
-	p.image.LineTo(0, float64(p.image.Width()))
-	p.image.LineTo(0, float64(p.image.Width()))
-	p.image.LineTo(float64(p.image.Width())*25, 0)
-	p.image.ClosePath()
-	p.image.Fill()
-	p.image.Stroke()
-	// now iterate and spackle with polygonal noise
-	for i := 0; i < p.Iterations; i++ {
-		p.image.SetRGBA255(randomRGBA())
-		p.image.SetLineWidth(randomLineWidth(p.image.Width()))
-		p.image.DrawRegularPolygon(randomPolygon(p.image.Width(), p.image.Height(), i))
-		p.image.Stroke()
-	}
-	if p.WriteFile {
-		p.SaveFile()
-	}
-	return p.image
-}
 
 func randomLinearGradient(width, height int) gg.Gradient {
 	grad := gg.NewLinearGradient(0, 0, float64(width)*1.5, float64(height)*1.5)
@@ -97,18 +47,18 @@ func randomPolygon(width, height int, it ...int) (n int, x, y, r, rotation float
 	}()
 	n = rand.Intn(7-3) + 3
 	max, min := height/16*(iteration*2), height/26*iteration
-	if max <= min {
-		max, min = min, max
+	if max < min {
+		max, min = min+5, max
 	}
 	r = float64(rand.Intn(max-min) + min)
-	max, min = int((float64(width)*.95)-(r/2)), int(r)
+	max, min = int((float64(width)*.9)-(r/2)), int(r)
 	if max <= min {
-		max, min = min, max
+		max, min = min+5, max
 	}
 	x = float64(rand.Intn(max-min) + min)
-	max, min = int((float64(height)*.95)-(r/2)), int(r)
+	max, min = int((float64(height)*.9)-(r/2)), int(r)
 	if max <= min {
-		max, min = min, max
+		max, min = min+5, max
 	}
 	y = float64(rand.Intn(max-min) + min)
 	rotation = r * 1.5
